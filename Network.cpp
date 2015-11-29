@@ -15,6 +15,7 @@ File: Network.cpp
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <math.h>
 #include "Network.h"
 
 using namespace std;
@@ -88,14 +89,14 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 			// Update output node weights
 			for (unsigned int j = 0; j < outputLayer.size(); ++j) {
 				for (unsigned int k = 0; k < outputLayer[j]->weights.size(); ++k) {
-					outputLayer[j]->weights[k] += (learningRate * hiddenLayer[k]->activation * outputLayer[j]->activation);
+					outputLayer[j]->weights[k] += (learningRate * hiddenLayer[k]->activation * outputLayer[j]->error);
 				}
 			}
 
 			// Update hidden node weights
 			for (unsigned int j = 1; j < hiddenLayer.size(); ++j) {
 				for (unsigned int k = 0; k < hiddenLayer[j]->weights.size(); ++k) {
-					hiddenLayer[j]->weights[k] += (learningRate * inputLayer[k]->activation * hiddenLayer[j]->activation);
+					hiddenLayer[j]->weights[k] += (learningRate * inputLayer[k]->activation * hiddenLayer[j]->error);
 				}
 			}
 
