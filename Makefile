@@ -1,2 +1,2 @@
-build:
-	g++ -std=c++11 main.cpp Network.cpp
+train:
+	g++ -std=c++11 train.cpp Network.cpp

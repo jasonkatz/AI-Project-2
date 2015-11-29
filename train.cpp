@@ -6,7 +6,7 @@ ECE-469 Project 2: Neural Network
 Neural Network implementation
 with one hidden layer
 
-File: main.cpp
+File: train.cpp
 *****************************************
 */
 
@@ -17,8 +17,8 @@ using namespace std;
 
 int main() {
 
-	Network n = Network::LoadFromFile("sample.NNWDBC.init");
-	n.Train("wdbc.train", 100, .1);
+	Network n = Network::LoadFromFile("sample.NNGrades.init");
+	n.Train("grades.train", 100, .05);
 	Network::SaveToFile("out.txt", n);
 
 	//system("pause");

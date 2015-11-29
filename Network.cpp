@@ -32,12 +32,13 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 	 */
 
 	string line;
-	stringstream ss(line);
+	stringstream ss;
 
 	// Get training data parameters
 	ifstream trainFile(fileName);
 	int numExamples, numInputs, numOutputs;
 	getline(trainFile, line);
+	ss.str(line);
 	ss >> numExamples >> numInputs >> numOutputs;
 	ss.clear();
 
