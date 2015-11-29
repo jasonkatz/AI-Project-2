@@ -31,7 +31,6 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 	ifstream trainFile(fileName);
 	int numExamples, numInputs, numOutputs;
 	trainFile >> numExamples >> numInputs >> numOutputs;
-	trainFile.close();
 
 	// Main loop
 	for (int num = 0; num < epochs; ++num) {
@@ -47,10 +46,10 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 			}
 			
 			// Propagate inputs forward to hidden layer (skip fixed hidden node)
-			for (int j = 1; j < hiddenLayer.size(); ++j) {
+			for (unsigned int j = 1; j < hiddenLayer.size(); ++j) {
 				// Compute new in for this node
 				hiddenLayer[j]->in = 0;
-				for (int k = 0; k < hiddenLayer[j]->weights.size(); ++k) {
+				for (unsigned int k = 0; k < hiddenLayer[j]->weights.size(); ++k) {
 					hiddenLayer[j]->in += (hiddenLayer[j]->weights[k] * inputLayer[k]->activation);
 				}
 				// Set new activation
@@ -58,10 +57,10 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 			}
 
 			// Propagate hidden nodes forward to output layer
-			for (int j = 1; j < outputLayer.size(); ++j) {
+			for (unsigned int j = 0; j < outputLayer.size(); ++j) {
 				// Compute new in for this node
 				outputLayer[j]->in = 0;
-				for (int k = 0; k < outputLayer[j]->weights.size(); ++k) {
+				for (unsigned int k = 0; k < outputLayer[j]->weights.size(); ++k) {
 					outputLayer[j]->in += (outputLayer[j]->weights[k] * hiddenLayer[k]->activation);
 				}
 				// Set new activation
@@ -71,25 +70,40 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 			// Back propagate errors from output layer to input layer
 
 			// Calculate errors at the output layer
-			for (int j = 0; j < outputLayer.size(); ++j) {
+			for (unsigned int j = 0; j < outputLayer.size(); ++j) {
 				double desired;
 				trainFile >> desired;
 				outputLayer[j]->error = sigmoidPrime(outputLayer[j]->in) * (desired - outputLayer[j]->activation);
 			}
 
 			// Calculate errors at the hidden layer (skip fixed node)
-			for (int j = 1; j < hiddenLayer.size() + 1; ++j) {
+			for (unsigned int j = 1; j < hiddenLayer.size(); ++j) {
 				hiddenLayer[j]->error = 0;
-				for (int k = 0; k < outputLayer.size(); ++k) {
+				for (unsigned int k = 0; k < outputLayer.size(); ++k) {
 					hiddenLayer[j]->error += (outputLayer[k]->weights[j] * outputLayer[k]->error);
 				}
 				hiddenLayer[j]->error *= sigmoidPrime(hiddenLayer[j]->in);
+			}
+
+			// Update output node weights
+			for (unsigned int j = 0; j < outputLayer.size(); ++j) {
+				for (unsigned int k = 0; k < outputLayer[j]->weights.size(); ++k) {
+					outputLayer[j]->weights[k] += (learningRate * hiddenLayer[k]->activation * outputLayer[j]->activation);
+				}
+			}
+
+			// Update hidden node weights
+			for (unsigned int j = 1; j < hiddenLayer.size(); ++j) {
+				for (unsigned int k = 0; k < hiddenLayer[j]->weights.size(); ++k) {
+					hiddenLayer[j]->weights[k] += (learningRate * inputLayer[k]->activation * hiddenLayer[j]->activation);
+				}
 			}
 
 		}
 
 	}
 
+	trainFile.close();
 }
 
 Network Network::LoadFromFile(string fileName) {
@@ -124,23 +138,27 @@ Network Network::LoadFromFile(string fileName) {
 	hiddens[0] = hiddenFixed;
 	for (int i = 1; i < numHidden + 1; ++i) {
 		Node * n = new Node();
+		vector<double> weights;
 		for (int j = 0; j < numInputs + 1; ++j) {
 			double w;
 			initFile >> w;
-			n->weights.push_back(w);
+			weights.push_back(w);
 		}
 		hiddens[i] = n;
+		hiddens[i]->weights = weights;
 	}
 
 	// Initialize output nodes
 	for (int i = 0; i < numOutputs; ++i) {
 		Node * n = new Node();
+		vector<double> weights;
 		for (int j = 0; j < numHidden + 1; ++j) {
 			double w;
 			initFile >> w;
-			n->weights.push_back(w);
+			weights.push_back(w);
 		}
 		outputs[i] = n;
+		outputs[i]->weights = weights;
 	}
 
 	initFile.close();
@@ -187,5 +205,5 @@ double Network::sigmoid(double num) {
 }
 
 double Network::sigmoidPrime(double num) {
-	return sigmoid(num) * (1 - sigmoid(num));
+	return sigmoid(num) * ((double)1 - sigmoid(num));
 }

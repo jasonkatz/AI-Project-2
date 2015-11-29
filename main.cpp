@@ -18,7 +18,7 @@ using namespace std;
 int main() {
 
 	Network n = Network::LoadFromFile("sample.NNWDBC.init");
-	n.Train("wdbc.train", 100, .1);
+	n.Train("wdbc.mini_train", 1, .1);
 	Network::SaveToFile("out.txt", n);
 
 	//system("pause");
