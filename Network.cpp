@@ -27,11 +27,40 @@ Network::Network(vector<Node *> i, vector<Node *> h, vector<Node *> o) {
 }
 
 void Network::Train(string fileName, int epochs, double learningRate) {
+	/*
+	 * Load training data
+	 */
+
+	string line;
+	stringstream ss(line);
 
 	// Get training data parameters
 	ifstream trainFile(fileName);
 	int numExamples, numInputs, numOutputs;
-	trainFile >> numExamples >> numInputs >> numOutputs;
+	getline(trainFile, line);
+	ss >> numExamples >> numInputs >> numOutputs;
+	ss.clear();
+
+	// Load examples here so we don't have to do it every epoch
+	vector<vector<double>> inputExamples, outputExamples;
+	inputExamples.resize(numExamples);
+	outputExamples.resize(numExamples);
+	int index = 0;
+	while (getline(trainFile, line)) {
+		ss.str(line);
+		inputExamples[index].resize(numInputs);
+		outputExamples[index].resize(numOutputs);
+		double val;
+		for (int i = 0; i < numInputs; ++i) {
+			ss >> inputExamples[index][i];
+		}
+		for (int i = 0; i < numOutputs; ++i) {
+			ss >> outputExamples[index][i];
+		}
+		++index;
+		ss.clear();
+	}
+	trainFile.close();
 
 	// Main loop
 	for (int num = 0; num < epochs; ++num) {
@@ -41,11 +70,9 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 
 			// Set all activations in input layer equal to the example (skip fixed input node)
 			for (int i = 1; i < numInputs + 1; ++i) {
-				double x;
-				trainFile >> x;
-				inputLayer[i]->activation = x;
+				inputLayer[i]->activation = inputExamples[ex][i - 1];
 			}
-			
+
 			// Propagate inputs forward to hidden layer (skip fixed hidden node)
 			for (unsigned int i = 1; i < hiddenLayer.size(); ++i) {
 				// Compute new in for this node
@@ -72,9 +99,7 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 
 			// Calculate errors at the output layer
 			for (unsigned int i = 0; i < outputLayer.size(); ++i) {
-				double desired;
-				trainFile >> desired;
-				outputLayer[i]->error = sigmoidPrime(outputLayer[i]->in) * (desired - outputLayer[i]->activation);
+				outputLayer[i]->error = sigmoidPrime(outputLayer[i]->in) * (outputExamples[ex][i] - outputLayer[i]->activation);
 			}
 
 			// Calculate errors at the hidden layer (skip fixed node)
@@ -103,8 +128,6 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 		}
 
 	}
-
-	trainFile.close();
 }
 
 Network Network::LoadFromFile(string fileName) {
