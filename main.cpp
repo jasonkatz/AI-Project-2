@@ -17,8 +17,10 @@ using namespace std;
 
 int main() {
 
-	cout << "Hello, world!" << endl;
+	Network n = Network::LoadFromFile("sample.NNWDBC.init");
+	n.Train("wdbc.train", 100, .1);
+	Network::SaveToFile("out.txt", n);
 
-	system("pause");
+	//system("pause");
 	return 0;
 }
