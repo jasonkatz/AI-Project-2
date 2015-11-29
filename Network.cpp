@@ -37,66 +37,66 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 	for (int num = 0; num < epochs; ++num) {
 
 		// Cycle through all examples
-		for (int i = 0; i < numExamples; ++i) {
+		for (int ex = 0; ex < numExamples; ++ex) {
 
-			// Set all activations in input layer equal to example (skip fixed input node)
-			for (int j = 1; j < numInputs + 1; ++j) {
+			// Set all activations in input layer equal to the example (skip fixed input node)
+			for (int i = 1; i < numInputs + 1; ++i) {
 				double x;
 				trainFile >> x;
-				inputLayer[j]->activation = x;
+				inputLayer[i]->activation = x;
 			}
 			
 			// Propagate inputs forward to hidden layer (skip fixed hidden node)
-			for (unsigned int j = 1; j < hiddenLayer.size(); ++j) {
+			for (unsigned int i = 1; i < hiddenLayer.size(); ++i) {
 				// Compute new in for this node
-				hiddenLayer[j]->in = 0;
-				for (unsigned int k = 0; k < hiddenLayer[j]->weights.size(); ++k) {
-					hiddenLayer[j]->in += (hiddenLayer[j]->weights[k] * inputLayer[k]->activation);
+				hiddenLayer[i]->in = 0;
+				for (unsigned int j = 0; j < hiddenLayer[i]->weights.size(); ++j) {
+					hiddenLayer[i]->in += (hiddenLayer[i]->weights[j] * inputLayer[j]->activation);
 				}
 				// Set new activation
-				hiddenLayer[j]->activation = sigmoid(hiddenLayer[j]->in);
+				hiddenLayer[i]->activation = sigmoid(hiddenLayer[i]->in);
 			}
 
 			// Propagate hidden nodes forward to output layer
-			for (unsigned int j = 0; j < outputLayer.size(); ++j) {
+			for (unsigned int i = 0; i < outputLayer.size(); ++i) {
 				// Compute new in for this node
-				outputLayer[j]->in = 0;
-				for (unsigned int k = 0; k < outputLayer[j]->weights.size(); ++k) {
-					outputLayer[j]->in += (outputLayer[j]->weights[k] * hiddenLayer[k]->activation);
+				outputLayer[i]->in = 0;
+				for (unsigned int j = 0; j < outputLayer[i]->weights.size(); ++j) {
+					outputLayer[i]->in += (outputLayer[i]->weights[j] * hiddenLayer[j]->activation);
 				}
 				// Set new activation
-				outputLayer[j]->activation = sigmoid(outputLayer[j]->in);
+				outputLayer[i]->activation = sigmoid(outputLayer[i]->in);
 			}
 
 			// Back propagate errors from output layer to input layer
 
 			// Calculate errors at the output layer
-			for (unsigned int j = 0; j < outputLayer.size(); ++j) {
+			for (unsigned int i = 0; i < outputLayer.size(); ++i) {
 				double desired;
 				trainFile >> desired;
-				outputLayer[j]->error = sigmoidPrime(outputLayer[j]->in) * (desired - outputLayer[j]->activation);
+				outputLayer[i]->error = sigmoidPrime(outputLayer[i]->in) * (desired - outputLayer[i]->activation);
 			}
 
 			// Calculate errors at the hidden layer (skip fixed node)
-			for (unsigned int j = 1; j < hiddenLayer.size(); ++j) {
-				hiddenLayer[j]->error = 0;
-				for (unsigned int k = 0; k < outputLayer.size(); ++k) {
-					hiddenLayer[j]->error += (outputLayer[k]->weights[j] * outputLayer[k]->error);
+			for (unsigned int i = 1; i < hiddenLayer.size(); ++i) {
+				hiddenLayer[i]->error = 0;
+				for (unsigned int j = 0; j < outputLayer.size(); ++j) {
+					hiddenLayer[i]->error += (outputLayer[j]->weights[i] * outputLayer[j]->error);
 				}
-				hiddenLayer[j]->error *= sigmoidPrime(hiddenLayer[j]->in);
+				hiddenLayer[i]->error *= sigmoidPrime(hiddenLayer[i]->in);
 			}
 
 			// Update output node weights
-			for (unsigned int j = 0; j < outputLayer.size(); ++j) {
-				for (unsigned int k = 0; k < outputLayer[j]->weights.size(); ++k) {
-					outputLayer[j]->weights[k] += (learningRate * hiddenLayer[k]->activation * outputLayer[j]->error);
+			for (unsigned int i = 0; i < outputLayer.size(); ++i) {
+				for (unsigned int j = 0; j < outputLayer[i]->weights.size(); ++j) {
+					outputLayer[i]->weights[j] += (learningRate * hiddenLayer[j]->activation * outputLayer[i]->error);
 				}
 			}
 
 			// Update hidden node weights
-			for (unsigned int j = 1; j < hiddenLayer.size(); ++j) {
-				for (unsigned int k = 0; k < hiddenLayer[j]->weights.size(); ++k) {
-					hiddenLayer[j]->weights[k] += (learningRate * inputLayer[k]->activation * hiddenLayer[j]->error);
+			for (unsigned int i = 1; i < hiddenLayer.size(); ++i) {
+				for (unsigned int j = 0; j < hiddenLayer[i]->weights.size(); ++j) {
+					hiddenLayer[i]->weights[j] += (learningRate * inputLayer[j]->activation * hiddenLayer[i]->error);
 				}
 			}
 
@@ -145,8 +145,8 @@ Network Network::LoadFromFile(string fileName) {
 			initFile >> w;
 			weights.push_back(w);
 		}
+		n->weights = weights;
 		hiddens[i] = n;
-		hiddens[i]->weights = weights;
 	}
 
 	// Initialize output nodes
@@ -158,8 +158,8 @@ Network Network::LoadFromFile(string fileName) {
 			initFile >> w;
 			weights.push_back(w);
 		}
+		n->weights = weights;
 		outputs[i] = n;
-		outputs[i]->weights = weights;
 	}
 
 	initFile.close();
@@ -171,11 +171,12 @@ void Network::SaveToFile(string fileName, Network n) {
 	ofstream saveFile(fileName);
 
 	// Write numbers of nodes to first line
-	saveFile << n.inputLayer.size() - 1 << " " << n.hiddenLayer.size() - 1 << " " << n.outputLayer.size() << "\n";
+	saveFile << n.inputLayer.size() - 1 << " " << n.hiddenLayer.size() - 1 << " " << n.outputLayer.size() << endl;
 
 	// Set double precision
-	saveFile << fixed << std::setprecision(3);
-
+	saveFile.precision(3);
+	saveFile << fixed;
+	
 	// Write weights of hidden layers to next lines (skip fixed node)
 	for (unsigned int i = 1; i < n.hiddenLayer.size(); ++i) {
 		for (unsigned int j = 0; j < n.hiddenLayer[i]->weights.size(); ++j) {
@@ -184,7 +185,7 @@ void Network::SaveToFile(string fileName, Network n) {
 				saveFile << " ";
 			}
 		}
-		saveFile << "\n";
+		saveFile << endl;
 	}
 
 	// Write weights of output layers to next lines
@@ -195,16 +196,16 @@ void Network::SaveToFile(string fileName, Network n) {
 				saveFile << " ";
 			}
 		}
-		saveFile << "\n";
+		saveFile << endl;
 	}
 
 	saveFile.close();
 }
 
 double Network::sigmoid(double num) {
-	return (double)1 / ((double)1 + exp(-num));
+	return 1.0 / (1.0 + exp(-num));
 }
 
 double Network::sigmoidPrime(double num) {
-	return sigmoid(num) * ((double)1 - sigmoid(num));
+	return sigmoid(num) * (1.0 - sigmoid(num));
 }
