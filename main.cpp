@@ -11,6 +11,7 @@ File: main.cpp
 */
 
 #include <iostream>
+#include "Network.h"
 
 using namespace std;
 
