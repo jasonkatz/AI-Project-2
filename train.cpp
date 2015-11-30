@@ -15,11 +15,11 @@ File: train.cpp
 
 using namespace std;
 
-/*int main() {
+int main() {
 
 	Network n = Network::LoadFromFile("sample.NNGrades.init");
 	n.Train("grades.train", 100, .05);
 	Network::SaveToFile("trained.txt", n);
 
 	return 0;
-}*/
+}

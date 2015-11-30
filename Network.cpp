@@ -218,6 +218,7 @@ void Network::Test(string testFileName, string resultsFileName) {
 	}
 
 	// Compute metrics
+	double overallAccuracy, precision, recall, f1;
 	double totalA = 0, totalB = 0, totalC = 0, totalD = 0;
 	double totalOverallAccuracy = 0, totalPrecision = 0, totalRecall = 0, totalF1 = 0;
 	vector<double> As, Bs, Cs, Ds;
@@ -235,10 +236,10 @@ void Network::Test(string testFileName, string resultsFileName) {
 				++D;
 			}
 		}
-		double overallAccuracy = (A + D) / (A + B + C + D);
-		double precision = A / (A + B);
-		double recall = A / (A + C);
-		double f1 = 2 * precision * recall / (precision + recall);
+		overallAccuracy = (A + D) / (A + B + C + D);
+		precision = A / (A + B);
+		recall = A / (A + C);
+		f1 = 2 * precision * recall / (precision + recall);
 
 		totalOverallAccuracy += overallAccuracy;
 		totalPrecision += precision;
@@ -265,7 +266,7 @@ void Network::Test(string testFileName, string resultsFileName) {
 	double macroOverallAccuracy = totalOverallAccuracy / numOutputs;
 	double macroPrecision = totalPrecision / numOutputs;
 	double macroRecall = totalRecall / numOutputs;
-	double macroF1 = totalF1 / numOutputs;
+	double macroF1 = 2 * macroPrecision * macroRecall / (macroPrecision + macroRecall);
 
 	// Write results to file
 	ofstream resultsFile(resultsFileName);
