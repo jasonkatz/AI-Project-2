@@ -11,15 +11,54 @@ File: train.cpp
 */
 
 #include <iostream>
+#include <string>
+#include <limits>
 #include "Network.h"
 
 using namespace std;
 
 int main() {
 
-	Network n = Network::LoadFromFile("sample.NNGrades.init");
-	n.Train("grades.train", 100, .05);
-	Network::SaveToFile("trained.txt", n);
+	// Get filenames
+	string initFileName;
+	cout << "Enter the name of a neural net file: ";
+	cin >> initFileName;
+
+	string trainingFileName;
+	cout << "Enter the name of a training set file: ";
+	cin >> trainingFileName;
+
+	string outputFileName;
+	cout << "Enter the name of an output file: ";
+	cin >> outputFileName;
+
+	// Get training parameters
+
+	int epochs;
+	cout << "Enter the number of epochs: ";
+	while (!(cin >> epochs) || epochs <= 0) {
+		// Ensure integral input
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		continue;
+	}
+
+	double learningRate;
+	cout << "Enter the learning rate: ";
+	while (!(cin >> learningRate) || learningRate < 0) {
+		// Ensure valid input
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	}
+
+	Network network = Network::LoadFromFile(initFileName); // Create and initialize network
+	cout << "Network initialized successfully" << endl;
+
+	network.Train(trainingFileName, epochs, learningRate); // Train network
+	cout << "Network trained successfully" << endl;
+
+	Network::SaveToFile(outputFileName, network); // Save network
+	cout << "Network saved successfully" << endl;
 
 	return 0;
 }
