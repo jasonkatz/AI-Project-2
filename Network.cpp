@@ -51,7 +51,6 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 		ss.str(line);
 		inputExamples[index].resize(numInputs);
 		outputExamples[index].resize(numOutputs);
-		double val;
 		for (int i = 0; i < numInputs; ++i) {
 			ss >> inputExamples[index][i];
 		}
@@ -129,6 +128,137 @@ void Network::Train(string fileName, int epochs, double learningRate) {
 		}
 
 	}
+}
+
+void Network::Test(string testFileName, string resultsFileName) {
+	/*
+	* Load testing data
+	*/
+
+	string line;
+	stringstream ss;
+
+	// Get training data parameters
+	ifstream testFile(testFileName);
+	int numExamples, numInputs, numOutputs;
+	getline(testFile, line);
+	ss.str(line);
+	ss >> numExamples >> numInputs >> numOutputs;
+	ss.clear();
+
+	// Load testing examples here
+	vector<vector<double>> inputExamples, outputExamples;
+	inputExamples.resize(numExamples);
+	outputExamples.resize(numExamples);
+	int index = 0;
+	while (getline(testFile, line)) {
+		ss.str(line);
+		inputExamples[index].resize(numInputs);
+		outputExamples[index].resize(numOutputs);
+		for (int i = 0; i < numInputs; ++i) {
+			ss >> inputExamples[index][i];
+		}
+		for (int i = 0; i < numOutputs; ++i) {
+			ss >> outputExamples[index][i];
+		}
+		++index;
+		ss.clear();
+	}
+	testFile.close();
+
+	// Get test results:
+	// 0 for predicted == 1, actual == 1
+	// 1 for predicted == 1, actual == 0
+	// 2 for predicted == 0, actual == 1
+	// 3 for predicted == 0, actual == 0
+	vector<vector<int>> results;
+	results.resize(numExamples);
+
+	// Set all activations in input layer equal to the example (skip fixed input node)
+	for (int ex = 0; ex < numExamples; ++ex) {
+		results[ex].resize(numOutputs);
+
+		for (int i = 1; i < numInputs + 1; ++i) {
+			inputLayer[i]->activation = inputExamples[ex][i - 1];
+		}
+
+		// Propagate inputs forward to hidden layer (skip fixed hidden node)
+		for (unsigned int i = 1; i < hiddenLayer.size(); ++i) {
+			// Compute new in for this node
+			hiddenLayer[i]->in = 0;
+			for (unsigned int j = 0; j < hiddenLayer[i]->weights.size(); ++j) {
+				hiddenLayer[i]->in += (hiddenLayer[i]->weights[j] * inputLayer[j]->activation);
+			}
+			// Set new activation
+			hiddenLayer[i]->activation = sigmoid(hiddenLayer[i]->in);
+		}
+
+		// Propagate hidden nodes forward to output layer
+		for (unsigned int i = 0; i < outputLayer.size(); ++i) {
+			// Compute new in for this node
+			outputLayer[i]->in = 0;
+			for (unsigned int j = 0; j < outputLayer[i]->weights.size(); ++j) {
+				outputLayer[i]->in += (outputLayer[i]->weights[j] * hiddenLayer[j]->activation);
+			}
+			// Set new activation
+			outputLayer[i]->activation = sigmoid(outputLayer[i]->in);
+		}
+
+		for (unsigned int i = 0; i < outputLayer.size(); ++i) {
+			if (outputLayer[i]->activation > .5 && outputExamples[ex][i]) {
+				results[ex][i] = 0;
+			} else if (outputLayer[i]->activation > .5 && !outputExamples[ex][i]) {
+				results[ex][i] = 1;
+			} else if (outputLayer[i]->activation < .5 && outputExamples[ex][i]) {
+				results[ex][i] = 2;
+			} else if (outputLayer[i]->activation < .5 && !outputExamples[ex][i]) {
+				results[ex][i] = 3;
+			}
+		}
+	}
+
+	// Compute metrics
+	double totalA = 0, totalB = 0, totalC = 0, totalD = 0;
+	double totalOverallAccuracy = 0, totalPrecision = 0, totalRecall = 0, totalF1 = 0;
+	vector<int> As, Bs, Cs, Ds;
+	vector<double> overallAccuracies, precisions, recalls, f1s;
+	for (int i = 0; i < numOutputs; ++i) {
+		double A = 0, B = 0, C = 0, D = 0;
+		for (int j = 0; j < numExamples; ++j) {
+			if (results[j][i] == 0) {
+				++A;
+			} else if (results[j][i] == 1) {
+				++B;
+			} else if (results[j][i] == 2) {
+				++C;
+			} else if (results[j][i] = 3) {
+				++D;
+			}
+		}
+		double overallAccuracy = (A + D) / (A + B + C + D);
+		double precision = A / (A + B);
+		double recall = A / (A + C);
+		double f1 = 2 * precision * recall / (precision + recall);
+
+		totalOverallAccuracy += overallAccuracy;
+		totalPrecision += precision;
+		totalRecall += recall;
+		totalF1 += f1;
+		overallAccuracies.push_back(overallAccuracy);
+		precisions.push_back(precision);
+		recalls.push_back(recall);
+		f1s.push_back(f1);
+		As.push_back(A);
+		Bs.push_back(B);
+		Cs.push_back(C);
+		Ds.push_back(D);
+		totalA += A;
+		totalB += B;
+		totalC += C;
+		totalD += D;
+	}
+
+
 }
 
 Network Network::LoadFromFile(string fileName) {
