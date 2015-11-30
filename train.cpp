@@ -17,8 +17,8 @@ using namespace std;
 
 /*int main() {
 
-	Network n = Network::LoadFromFile("sample.NNWDBC.init");
-	n.Train("wdbc.train", 100, .1);
+	Network n = Network::LoadFromFile("sample.NNGrades.init");
+	n.Train("grades.train", 100, .05);
 	Network::SaveToFile("trained.txt", n);
 
 	return 0;

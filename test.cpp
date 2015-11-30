@@ -18,7 +18,7 @@ using namespace std;
 int main() {
 
 	Network n = Network::LoadFromFile("trained.txt");
-	n.Test("wdbc.test", "results.txt");
+	n.Test("grades.test", "results.txt");
 
 	return 0;
 }

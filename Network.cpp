@@ -220,7 +220,7 @@ void Network::Test(string testFileName, string resultsFileName) {
 	// Compute metrics
 	double totalA = 0, totalB = 0, totalC = 0, totalD = 0;
 	double totalOverallAccuracy = 0, totalPrecision = 0, totalRecall = 0, totalF1 = 0;
-	vector<int> As, Bs, Cs, Ds;
+	vector<double> As, Bs, Cs, Ds;
 	vector<double> overallAccuracies, precisions, recalls, f1s;
 	for (int i = 0; i < numOutputs; ++i) {
 		double A = 0, B = 0, C = 0, D = 0;
@@ -258,7 +258,24 @@ void Network::Test(string testFileName, string resultsFileName) {
 		totalD += D;
 	}
 
+	double microOverallAccuracy = (totalA + totalD) / (totalA + totalB + totalC + totalD);
+	double microPrecision = totalA / (totalA + totalB);
+	double microRecall = totalA / (totalA + totalC);
+	double microF1 = 2 * microPrecision * microRecall / (microPrecision + microRecall);
+	double macroOverallAccuracy = totalOverallAccuracy / numOutputs;
+	double macroPrecision = totalPrecision / numOutputs;
+	double macroRecall = totalRecall / numOutputs;
+	double macroF1 = totalF1 / numOutputs;
 
+	// Write results to file
+	ofstream resultsFile(resultsFileName);
+	for (int i = 0; i < numOutputs; ++i) {
+		resultsFile << (int) As[i] << " " << (int) Bs[i] << " " << (int) Cs[i] << " " << (int) Ds[i] << " ";
+		resultsFile.precision(3);
+		resultsFile << fixed << overallAccuracies[i] << " " << precisions[i] << " " << recalls[i] << " " << f1s[i] << endl;
+	}
+	resultsFile << microOverallAccuracy << " " << microPrecision << " " << microRecall << " " << microF1 << endl;
+	resultsFile << macroOverallAccuracy << " " << macroPrecision << " " << macroRecall << " " << macroF1 << endl;
 }
 
 Network Network::LoadFromFile(string fileName) {
