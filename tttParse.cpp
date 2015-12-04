@@ -1,6 +1,22 @@
+/*
+*****************************************
+Jason Katz
+ECE-469 Project 2: Neural Network
+
+Neural network implementation
+with one hidden layer
+
+File: tttParse.cpp
+Description: Parses raw tic tac toe data
+and creates a train or test file in the
+correct format
+*****************************************
+*/
+
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -9,7 +25,12 @@ std::vector<std::string> split(const std::string &s, char delim);
 
 int main() {
 
-	bool test = true;
+	bool test = true; // true: testing set; false: training set
+	char type;
+	cout << "Would you like a training set (1) or testing set (2)? ";
+	cin >> type;
+	test = (type == '2');
+
     ifstream inFile("ttt.data");
 
 	string outExt = (test ? "test" : "train");
@@ -42,6 +63,8 @@ int main() {
 
     inFile.close();
     outFile.close();
+
+	cout << "IMPORTANT: You must manually enter the file header at the top!" << endl;
 
     return 0;
 }

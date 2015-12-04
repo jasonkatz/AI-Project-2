@@ -3,10 +3,13 @@
 Jason Katz
 ECE-469 Project 2: Neural Network
 
-Neural Network implementation
+Neural network implementation
 with one hidden layer
 
 File: train.cpp
+Description: Trains a neural network on
+a given training set and outputs the
+trained network into a specified file
 *****************************************
 */
 

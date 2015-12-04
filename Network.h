@@ -3,10 +3,12 @@
 Jason Katz
 ECE-469 Project 2: Neural Network
 
-Neural Network implementation
+Neural network implementation
 with one hidden layer
 
 File: Network.h
+Description: Neural network class
+structure and declarations
 *****************************************
 */
 

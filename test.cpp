@@ -3,10 +3,13 @@
 Jason Katz
 ECE-469 Project 2: Neural Network
 
-Neural Network implementation
+Neural network implementation
 with one hidden layer
 
 File: test.cpp
+Description: Tests a neural network's
+performance on a testing set and outputs
+results into a specified file
 *****************************************
 */
 

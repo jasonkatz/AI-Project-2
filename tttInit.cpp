@@ -1,3 +1,19 @@
+/*
+*****************************************
+Jason Katz
+ECE-469 Project 2: Neural Network
+
+Neural network implementation
+with one hidden layer
+
+File: tttInit.cpp
+Description: Initializes a neural network
+with 9 inputs, 1 output (tic tac toe
+spec) and a modifiable number of hidden
+nodes
+*****************************************
+*/
+
 #include <fstream>
 #include <sstream>
 #include <time.h>
