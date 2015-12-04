@@ -6,3 +6,6 @@ test:
 
 parse:
 	g++ -std=c++11 connect4Parse.cpp
+
+init:
+	g++ -std=c++11 connect4Init.cpp
