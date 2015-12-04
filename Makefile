@@ -5,7 +5,7 @@ test:
 	g++ -std=c++11 test.cpp Network.cpp
 
 parse:
-	g++ -std=c++11 connect4Parse.cpp
+	g++ -std=c++11 tttParse.cpp
 
 init:
-	g++ -std=c++11 connect4Init.cpp
+	g++ -std=c++11 tttInit.cpp

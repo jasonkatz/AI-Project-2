@@ -10,9 +10,9 @@ int main() {
 
 	srand(time(NULL));
 
-	ofstream outFile("connect4.init");
+	ofstream outFile("ttt.init");
 
-	int numInputs = 42, numOutputs = 2;
+	int numInputs = 9, numOutputs = 1;
 	int numHidden;
 	cout << "Enter the number of nodes in the hidden layer: ";
 	cin >> numHidden;
