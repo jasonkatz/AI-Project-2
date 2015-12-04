@@ -3,3 +3,6 @@ train:
 
 test:
 	g++ -std=c++11 test.cpp Network.cpp
+
+parse:
+	g++ -std=c++11 connect4Parse.cpp
