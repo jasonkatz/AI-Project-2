@@ -25,7 +25,7 @@ std::vector<std::string> split(const std::string &s, char delim);
 
 int main() {
 
-	bool test = true; // true: testing set; false: training set
+	bool test = false; // true: testing set; false: training set
 	char type;
 	cout << "Would you like a training set (1) or testing set (2)? ";
 	cin >> type;
