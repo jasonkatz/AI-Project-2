@@ -20,9 +20,9 @@ int main() {
             // Get inputs
             for (int i = 0; i < 42; ++i) {
                 if (tokens[i] == "b") {
-                    outFile << "0.333" << " ";
+                    outFile << "0.000" << " ";
                 } else if (tokens[i] == "x") {
-                    outFile << "0.666" << " ";
+                    outFile << "0.500" << " ";
                 } else if (tokens[i] == "o") {
                     outFile << "1.000" << " ";
                 }
