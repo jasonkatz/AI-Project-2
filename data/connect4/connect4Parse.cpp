@@ -10,12 +10,12 @@ std::vector<std::string> split(const std::string &s, char delim);
 int main() {
 
     ifstream inFile("connect-4.data");
-    ofstream outFile("connect4.test");
+    ofstream outFile("connect4.train");
 
     string line;
     int index = 0;
     while (getline(inFile, line)) {
-        if (index % 2 == 1) {
+        if (index % 2 == 0) {
             vector<string> tokens = split(line, ',');
             // Get inputs
             for (int i = 0; i < 42; ++i) {
